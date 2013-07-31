@@ -1,0 +1,5 @@
+name: redditFeed
+version: 0.1
+description: Feed a subreddit into your minecraft server!
+author: bobacadodl
+main: com.bobacadodl.redditFeed.RedditFeed
