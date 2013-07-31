@@ -13,6 +13,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.bobacadodl.redditFeed.Metrics.Graph;
+import com.bobacadodl.redditFeed.Metrics.Plotter;
+
 public class RedditFeed extends JavaPlugin{
 	int x=0;
 	public RedditFeedConfig cfg;
@@ -23,6 +26,35 @@ public class RedditFeed extends JavaPlugin{
 		cfg= new RedditFeedConfig(this);
 		cfg.load();
 		
+		
+		
+		try {
+		    Metrics metrics = new Metrics(this);
+		    metrics.start();
+		    
+		    Graph postsMade = metrics.createGraph("Section Type");
+		    postsMade.addPlotter(new Plotter("Hot"){
+				@Override
+				public int getValue() {
+					return (cfg.section.equalsIgnoreCase("hot")?1:0);
+				}
+		    }); 
+		    postsMade.addPlotter(new Plotter("New"){
+				@Override
+				public int getValue() {
+					return (cfg.section.equalsIgnoreCase("new")?1:0);
+				}
+		    });
+		    postsMade.addPlotter(new Plotter("Top"){
+				@Override
+				public int getValue() {
+					return (cfg.section.equalsIgnoreCase("top")?1:0);
+				}
+		    });		    
+		    
+		} catch (IOException e) {
+		    // Failed to submit the stats :-(
+		}
 		
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){
 			@Override
