@@ -17,9 +17,12 @@ public class RedditFeed extends JavaPlugin{
 	int x=0;
 	public RedditFeedConfig cfg;
 	Random r = new Random();
+	
+	String lastPost = "";
 	public void onEnable(){
 		cfg= new RedditFeedConfig(this);
 		cfg.load();
+		
 		
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){
 			@Override
@@ -32,15 +35,21 @@ public class RedditFeed extends JavaPlugin{
 					JsonObject data = o.get("data").asObject();					
 					JsonArray posts = data.get("children").asArray();
 					
-					JsonObject post = null;
+					JsonObject post=null;
 					if(cfg.random){
 						post = posts.get(r.nextInt(posts.size()-1)).asObject();
 					}
 					else{
-						post = posts.get(x).asObject();
+						post = posts.get(0).asObject();
+						if(post.toString().equals(lastPost)){
+							return;	
+						}
+						else{
+							lastPost=post.toString();
+						}
 					}
 					JsonObject postData = post.get("data").asObject();	
-						
+					
 					String author = postData.get("author").asString();
 					
 					JsonValue flairValue = postData.get("author_flair_text");
@@ -65,12 +74,6 @@ public class RedditFeed extends JavaPlugin{
 					getServer().broadcastMessage(ChatColor.GREEN+ups+"▲" + ChatColor.BLACK+" | "+ChatColor.RED+downs+"▼");
 					getServer().broadcastMessage(ChatColor.BLUE+""+ChatColor.UNDERLINE+urlstring);
 					
-					if(x==posts.size()-1){
-						x=0;
-					}
-					else{
-						x++;
-					}
 					is.close();
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
